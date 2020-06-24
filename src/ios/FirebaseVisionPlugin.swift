@@ -38,6 +38,36 @@ class FirebaseVisionPlugin: CDVPlugin {
         }
     }
 
+    @objc(onDeviceTextRecognizerBase64:)
+    func onDeviceTextRecognizerBase64(command: CDVInvokedUrlCommand) {
+        guard let base64String = command.arguments.first as? String else {
+            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Base64 image is required")
+            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+            return
+        }
+        getImage(base64String: base64String) { (image, error) in
+            if let error = error {
+                let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription)
+                self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+            } else {
+                let vision = Vision.vision()
+                let textRecognizer = vision.onDeviceTextRecognizer()
+                let decodedData = NSData(base64Encoded: base64String!, options: [])
+                let decodedimage = UIImage(data: decodedData as Data)
+                let visionImage = VisionImage(image: image!)
+                textRecognizer.process(visionImage) { (text, error) in
+                    if let error = error {
+                        let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription)
+                        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+                    } else {
+                        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: text?.text)
+                        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+                    }
+                }
+            }
+        }
+    }    
+
     @objc(barcodeDetector:)
     func barcodeDetector(command: CDVInvokedUrlCommand) {
         guard let imageURL = command.arguments.first as? String else {

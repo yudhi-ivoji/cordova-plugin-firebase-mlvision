@@ -121,7 +121,7 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
         } else {
             callbackContext.error("Expected one non-empty string argument.");
         }
-    }    
+    }
 
     private void barcodeDetector(String message, CallbackContext callbackContext) {
         if (message != null && message.length() > 0) {
