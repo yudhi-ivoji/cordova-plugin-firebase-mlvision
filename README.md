@@ -48,6 +48,18 @@ FirebaseVisionPlugin.onDeviceTextRecognizer(FILE_URI,
     })
 })
 ```
+## Text recognition base64
+
+```js
+FirebaseVisionPlugin.onDeviceTextRecognizerBase64(FILE_URI,
+    (text) => {
+        console.log(text);
+    },
+    (error) => {
+        console.error(error);;
+    })
+})
+```
 
 ## Barcode detector
 ```js
