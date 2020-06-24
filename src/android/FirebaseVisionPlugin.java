@@ -3,6 +3,9 @@ package by.alon22.cordova.firebase;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Base64;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -86,6 +89,34 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
             callbackContext.error("Expected one non-empty string argument.");
         }
     }
+
+    private void onDeviceTextRecognizerBase64(String message, CallbackContext callbackContext) {
+        if (message != null && message.length() > 0) {
+            try {
+                Uri uri = Uri.parse(message);
+                byte[] decodedString = Base64.decode(message, Base64.DEFAULT);
+                FirebaseVisionImage image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);                
+                FirebaseVisionTextRecognizer recognizer = firebaseVision.getOnDeviceTextRecognizer();
+                recognizer.processImage(image)
+                        .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                            @Override
+                            public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                                callbackContext.success(firebaseVisionText.getText());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                callbackContext.error(e.getLocalizedMessage());
+                            }
+                        });
+            } catch (Exception e) {
+                callbackContext.error(e.getLocalizedMessage());
+            }
+        } else {
+            callbackContext.error("Expected one non-empty string argument.");
+        }
+    }    
 
     private void barcodeDetector(String message, CallbackContext callbackContext) {
         if (message != null && message.length() > 0) {
