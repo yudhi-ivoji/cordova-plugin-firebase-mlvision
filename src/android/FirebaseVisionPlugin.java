@@ -55,6 +55,10 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
             String message = args.getString(0);
             this.onDeviceTextRecognizer(message, callbackContext);
             return true;
+        } else if (action.equals("onDeviceTextRecognizerBase64")) {
+            String message = args.getString(0);
+            this.onDeviceTextRecognizerBase64(message, callbackContext);
+            return true;
         } else if (action.equals("barcodeDetector")) {
             String message = args.getString(0);
             this.barcodeDetector(message, callbackContext);
