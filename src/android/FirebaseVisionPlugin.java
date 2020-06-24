@@ -93,6 +93,7 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
     private void onDeviceTextRecognizerBase64(String message, CallbackContext callbackContext) {
         if (message != null && message.length() > 0) {
             try {
+                Bitmap bitmap= null;
                 byte[] decodedString = Base64.decode(message, Base64.DEFAULT);
                 bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
