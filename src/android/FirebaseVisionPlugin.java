@@ -99,38 +99,6 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
             callbackContext.error("Expected one non-empty string argument.");
         }
     }
-<<<<<<< Updated upstream
-=======
-    
-    private void onDeviceTextRecognizerBase64(String message, CallbackContext callbackContext) {
-        if (message != null && message.length() > 0) {
-            try {
-                Bitmap bitmap= null;
-                byte[] decodedString = Base64.decode(message, Base64.DEFAULT);
-                bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
-                FirebaseVisionTextRecognizer recognizer = firebaseVision.getOnDeviceTextRecognizer();
-                recognizer.processImage(image)
-                        .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
-                            @Override
-                            public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                                callbackContext.success(firebaseVisionText.getText());
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                callbackContext.error(e.getLocalizedMessage());
-                            }
-                        });
-            } catch (Exception e) {
-                callbackContext.error(e.getLocalizedMessage());
-            }
-        } else {
-            callbackContext.error("Expected one non-empty string argument.");
-        }
-    }        
->>>>>>> Stashed changes
 
     private void onDeviceTextRecognizerBase64(String message, CallbackContext callbackContext) {
         if (message != null && message.length() > 0) {
@@ -144,7 +112,12 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
                         .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                             @Override
                             public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                                callbackContext.success(firebaseVisionText.getText());
+                                try {
+                                    JSONObject text = FirebaseUtils.parseText(firebaseVisionText);
+                                    callbackContext.success(text);
+                                } catch (Exception e) {
+                                    callbackContext.error(e.getLocalizedMessage());
+                                }
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -160,7 +133,7 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
             callbackContext.error("Expected one non-empty string argument.");
         }
     }
-
+    
     private void barcodeDetector(String message, CallbackContext callbackContext) {
         if (message != null && message.length() > 0) {
             try {
