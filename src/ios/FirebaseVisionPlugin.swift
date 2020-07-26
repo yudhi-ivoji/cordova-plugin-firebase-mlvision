@@ -38,8 +38,6 @@ class FirebaseVisionPlugin: CDVPlugin {
         }
     }
 
-<<<<<<< Updated upstream
-=======
     @objc(onDeviceTextRecognizerBase64:)
     func onDeviceTextRecognizerBase64(command: CDVInvokedUrlCommand) {
         guard let base64String = command.arguments.first as? String else {
@@ -70,7 +68,6 @@ class FirebaseVisionPlugin: CDVPlugin {
         }
     }    
 
->>>>>>> Stashed changes
     @objc(barcodeDetector:)
     func barcodeDetector(command: CDVInvokedUrlCommand) {
         guard let imageURL = command.arguments.first as? String else {

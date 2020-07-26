@@ -3,6 +3,9 @@ package by.alon22.cordova.firebase;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Base64;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -52,6 +55,10 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
         if (action.equals("onDeviceTextRecognizer")) {
             String message = args.getString(0);
             this.onDeviceTextRecognizer(message, callbackContext);
+            return true;
+        } else if (action.equals("onDeviceTextRecognizerBase64")) {
+            String message = args.getString(0);
+            this.onDeviceTextRecognizerBase64(message, callbackContext);
             return true;
         } else if (action.equals("barcodeDetector")) {
             String message = args.getString(0);
@@ -124,6 +131,35 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
         }
     }        
 >>>>>>> Stashed changes
+
+    private void onDeviceTextRecognizerBase64(String message, CallbackContext callbackContext) {
+        if (message != null && message.length() > 0) {
+            try {
+                Bitmap bitmap= null;
+                byte[] decodedString = Base64.decode(message, Base64.DEFAULT);
+                bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
+                FirebaseVisionTextRecognizer recognizer = firebaseVision.getOnDeviceTextRecognizer();
+                recognizer.processImage(image)
+                        .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                            @Override
+                            public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                                callbackContext.success(firebaseVisionText.getText());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                callbackContext.error(e.getLocalizedMessage());
+                            }
+                        });
+            } catch (Exception e) {
+                callbackContext.error(e.getLocalizedMessage());
+            }
+        } else {
+            callbackContext.error("Expected one non-empty string argument.");
+        }
+    }
 
     private void barcodeDetector(String message, CallbackContext callbackContext) {
         if (message != null && message.length() > 0) {
