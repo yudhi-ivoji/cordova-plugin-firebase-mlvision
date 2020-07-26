@@ -112,7 +112,12 @@ public class FirebaseVisionPlugin extends CordovaPlugin {
                         .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                             @Override
                             public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                                callbackContext.success(firebaseVisionText.getText());
+                                try {
+                                    JSONObject text = FirebaseUtils.parseText(firebaseVisionText);
+                                    callbackContext.success(text);
+                                } catch (Exception e) {
+                                    callbackContext.error(e.getLocalizedMessage());
+                                }
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
