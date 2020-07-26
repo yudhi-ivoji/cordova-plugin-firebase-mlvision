@@ -30,7 +30,7 @@ class FirebaseVisionPlugin: CDVPlugin {
                         let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription)
                         self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
                     } else {
-                        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: text?.text)
+                        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: text?.toJSON())
                         self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
                     }
                 }
@@ -38,6 +38,39 @@ class FirebaseVisionPlugin: CDVPlugin {
         }
     }
 
+<<<<<<< Updated upstream
+=======
+    @objc(onDeviceTextRecognizerBase64:)
+    func onDeviceTextRecognizerBase64(command: CDVInvokedUrlCommand) {
+        guard let base64String = command.arguments.first as? String else {
+            let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Base64 image is required")
+            self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+            return
+        }
+        getImage(imageURL: base64String) { (image, error) in
+            if let error = error {
+                let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription)
+                self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+            } else {
+                let vision = Vision.vision()
+                let textRecognizer = vision.onDeviceTextRecognizer()
+                let decodedData = Data(base64Encoded: base64String, options: .ignoreUnknownCharacters)!
+                let decodedimage = UIImage(data: decodedData as Data)
+                let visionImage = VisionImage(image: decodedimage!)
+                textRecognizer.process(visionImage) { (text, error) in
+                    if let error = error {
+                        let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription)
+                        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+                    } else {
+                        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: text?.toJSON())
+                        self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
+                    }
+                }
+            }
+        }
+    }    
+
+>>>>>>> Stashed changes
     @objc(barcodeDetector:)
     func barcodeDetector(command: CDVInvokedUrlCommand) {
         guard let imageURL = command.arguments.first as? String else {
